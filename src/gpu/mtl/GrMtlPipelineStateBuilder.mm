@@ -501,6 +501,7 @@ GrMtlPipelineState* GrMtlPipelineStateBuilder::finalize(GrRenderTarget* renderTa
 
     NSError* error = nil;
 #if GR_METAL_SDK_VERSION >= 230
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(macOS 11.0, iOS 14.0, *)) {
         id<MTLBinaryArchive> archive = fGpu->binaryArchive();
         if (archive) {
@@ -518,6 +519,7 @@ GrMtlPipelineState* GrMtlPipelineStateBuilder::finalize(GrRenderTarget* renderTa
             }
         }
     }
+#endif
 #endif
     id<MTLRenderPipelineState> pipelineState;
     {
