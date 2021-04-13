@@ -50,6 +50,7 @@ static bool get_feature_set(id<MTLDevice> device, MTLFeatureSet* featureSet) {
 #endif
 
     // iOS Family group 3
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #ifdef SK_BUILD_FOR_IOS
     if (@available(iOS 10.0, *)) {
         if ([device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v2]) {
@@ -100,7 +101,35 @@ static bool get_feature_set(id<MTLDevice> device, MTLFeatureSet* featureSet) {
         return true;
     }
 #endif
-    // No supported feature sets were found
+#else
+
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v2]) {
+        *featureSet = MTLFeatureSet_tvOS_GPUFamily2_v2;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v1]) {
+        *featureSet = MTLFeatureSet_tvOS_GPUFamily2_v1;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v4]) {
+        *featureSet = MTLFeatureSet_tvOS_GPUFamily1_v4;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v3]) {
+        *featureSet = MTLFeatureSet_tvOS_GPUFamily1_v3;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v2]) {
+        *featureSet = MTLFeatureSet_tvOS_GPUFamily1_v2;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v1]) {
+        *featureSet = MTLFeatureSet_tvOS_GPUFamily1_v1;
+        return true;
+    }
+
+#endif
+        // No supported feature sets were found
     return false;
 }
 
@@ -153,9 +182,11 @@ GrMtlGpu::GrMtlGpu(GrDirectContext* direct, const GrContextOptions& options,
     this->initCapsAndCompiler(fMtlCaps);
     fCurrentCmdBuffer = GrMtlCommandBuffer::Make(fQueue);
 #if GR_METAL_SDK_VERSION >= 230
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(macOS 11.0, iOS 14.0, *)) {
         fBinaryArchive = (__bridge id<MTLBinaryArchive>)(binaryArchive);
     }
+#endif
 #endif
 }
 
@@ -1553,9 +1584,11 @@ void GrMtlGpu::onDumpJSON(SkJSONWriter* writer) const {
     }
 #endif  // SK_BUILD_FOR_MAC
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(macOS 10.15, iOS 13.0, *)) {
         writer->appendBool("hasUnifiedMemory", fDevice.hasUnifiedMemory);
     }
+#endif
 #endif
 #ifdef SK_BUILD_FOR_MAC
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
@@ -1636,10 +1669,12 @@ void GrMtlGpu::onDumpJSON(SkJSONWriter* writer) const {
     if (@available(macOS 10.14, iOS 12.0, *)) {
         writer->appendU64("maxArgumentBufferSamplerCount", fDevice.maxArgumentBufferSamplerCount);
     }
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #ifdef SK_BUILD_FOR_IOS
     if (@available(iOS 13.0, *)) {
         writer->appendU64("sparseTileSizeInBytes", fDevice.sparseTileSizeInBytes);
     }
+#endif
 #endif
     writer->endObject();
 
