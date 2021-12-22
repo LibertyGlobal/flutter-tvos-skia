@@ -92,8 +92,11 @@ bool GrMtlCaps::getGPUFamilyFromFeatureSet(id<MTLDevice> device,
             return true;
         }
     }
-#elif defined(SK_BUILD_FOR_IOS)
-    // TODO: support tvOS
+    
+#endif
+
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+#if defined(SK_BUILD_FOR_IOS)
    *gpuFamily = GPUFamily::kApple;
     // iOS 12
     if (@available(iOS 12.0, *)) {
@@ -153,6 +156,34 @@ bool GrMtlCaps::getGPUFamilyFromFeatureSet(id<MTLDevice> device,
         }
     }
     // We don't support earlier OSes
+#endif
+#else
+    *gpuFamily = GPUFamily::kApple;
+
+    if ([device MTLFeatureSet_tvOS_GPUFamily2_v2]) {   
+        *group = 2;
+        return true;
+    }
+    if ([device MTLFeatureSet_tvOS_GPUFamily2_v1]) { 
+        *group = 2;
+        return true;
+    }
+    if ([device MTLFeatureSet_tvOS_GPUFamily1_v4]) {
+        *group = 1;
+        return true;
+    }
+    if ([device MTLFeatureSet_tvOS_GPUFamily1_v3]) {
+        *group = 1;   
+        return true;
+    }
+    if ([device MTLFeatureSet_tvOS_GPUFamily1_v2]) {
+        *group = 1;
+        return true;
+    }
+    if ([device MTLFeatureSet_tvOS_GPUFamily1_v1]) {
+         *group = 1;
+        return true;
+    }
 #endif
 
     // No supported GPU families were found
