@@ -134,27 +134,27 @@ bool MtlCaps::GetGPUFamilyFromFeatureSet(id<MTLDevice> device, GPUFamily* gpuFam
 #else
     *gpuFamily = GPUFamily::kApple;
 
-   if ([device MTLFeatureSet_tvOS_GPUFamily2_v2]) {   
+   if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v2]) {   
         *group = 2;
         return true;
     }
-    if ([device MTLFeatureSet_tvOS_GPUFamily2_v1]) { 
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v1]) { 
         *group = 2;
         return true;
     }
-    if ([device MTLFeatureSet_tvOS_GPUFamily1_v4]) {
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v4]) {
         *group = 1;
         return true;
     }
-    if ([device MTLFeatureSet_tvOS_GPUFamily1_v3]) {
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v3]) {
         *group = 1;   
         return true;
     }
-    if ([device MTLFeatureSet_tvOS_GPUFamily1_v2]) {
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v2]) {
         *group = 1;
         return true;
     }
-    if ([device MTLFeatureSet_tvOS_GPUFamily1_v1]) {
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v1]) {
          *group = 1;
         return true;
     }
