@@ -195,10 +195,10 @@ bool GrMtlCaps::getGPUFamilyFromFeatureSet(id<MTLDevice> device,
 // https://developer.apple.com/documentation/metal/mtlgpufamily/apple7
 
 bool GrMtlCaps::getGPUFamily(id<MTLDevice> device, GPUFamily* gpuFamily, int* group) {
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #if GR_METAL_SDK_VERSION >= 220
     if (@available(macOS 10.15, iOS 13.0, tvOS 13.0, *)) {
-
-#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)       
+  
 #if GR_METAL_SDK_VERSION >= 230
         if ([device supportsFamily:MTLGPUFamilyApple7]) {
             *gpuFamily = GPUFamily::kApple;
@@ -255,8 +255,12 @@ bool GrMtlCaps::getGPUFamily(id<MTLDevice> device, GPUFamily* gpuFamily, int* gr
             return true;
         }
     }
+#endif
 #else
-        if ([device supportsFamily:MTLGPUFamilyApple5]) {
+
+#if GR_METAL_SDK_VERSION >= 220
+    if (@available(macOS 10.15, iOS 13.0, tvOS 13.0, *)) {
+         if ([device supportsFamily:MTLGPUFamilyApple5]) {
             *gpuFamily = GPUFamily::kApple;
             *group = 5;
             return true;
@@ -281,7 +285,7 @@ bool GrMtlCaps::getGPUFamily(id<MTLDevice> device, GPUFamily* gpuFamily, int* gr
             *group = 1;
             return true;
         }
-
+    }
 #endif
 #endif
     // No supported GPU families were found
