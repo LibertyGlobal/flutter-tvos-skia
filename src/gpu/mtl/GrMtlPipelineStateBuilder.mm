@@ -671,6 +671,7 @@ GrMtlPipelineState* GrMtlPipelineStateBuilder::finalize(
 
     NSError* error = nil;
 #if GR_METAL_SDK_VERSION >= 230
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(macOS 11.0, iOS 14.0, *)) {
         id<MTLBinaryArchive> archive = fGpu->binaryArchive();
         if (archive) {
@@ -688,6 +689,7 @@ GrMtlPipelineState* GrMtlPipelineStateBuilder::finalize(
             }
         }
     }
+#endif
 #endif
 
     id<MTLRenderPipelineState> pipelineState;
@@ -804,6 +806,7 @@ bool GrMtlPipelineStateBuilder::PrecompileShaders(GrMtlGpu* gpu, const SkData& c
             [precompiledLibs->fFragmentLibrary newFunctionWithName: @"fragmentMain"];
 
 #if GR_METAL_SDK_VERSION >= 230
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
     if (@available(macOS 11.0, iOS 14.0, *)) {
         id<MTLBinaryArchive> archive = gpu->binaryArchive();
         if (archive) {
@@ -822,6 +825,7 @@ bool GrMtlPipelineStateBuilder::PrecompileShaders(GrMtlGpu* gpu, const SkData& c
             }
         }
     }
+#endif
 #endif
     {
         TRACE_EVENT0("skia.shaders", "newRenderPipelineStateWithDescriptor");

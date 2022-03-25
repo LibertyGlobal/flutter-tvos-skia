@@ -64,8 +64,10 @@ bool Caps::GetGPUFamilyFromFeatureSet(id<MTLDevice> device, GPUFamily* gpuFamily
             return true;
         }
     }
-#elif defined(SK_BUILD_FOR_IOS)
-    // TODO: support tvOS
+#endif
+
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
+#if defined(SK_BUILD_FOR_IOS)
    *gpuFamily = GPUFamily::kApple;
     // iOS 12
     if (@available(iOS 12.0, *)) {
@@ -126,15 +128,49 @@ bool Caps::GetGPUFamilyFromFeatureSet(id<MTLDevice> device, GPUFamily* gpuFamily
     }
     // We don't support earlier OSes
 #endif
+#else
+    *gpuFamily = GPUFamily::kApple;
+
+   if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v2]) {   
+        *group = 2;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily2_v1]) { 
+        *group = 2;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v4]) {
+        *group = 1;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v3]) {
+        *group = 1;   
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v2]) {
+        *group = 1;
+        return true;
+    }
+    if ([device supportsFeatureSet:MTLFeatureSet_tvOS_GPUFamily1_v1]) {
+         *group = 1;
+        return true;
+    }
+#endif
 
     // No supported GPU families were found
     return false;
 }
 
+// Apple 6 and 7 family is not available on TV
+// https://developer.apple.com/documentation/metal/mtlgpufamily/apple6
+// https://developer.apple.com/documentation/metal/mtlgpufamily/apple7
+
 bool Caps::GetGPUFamily(id<MTLDevice> device, GPUFamily* gpuFamily, int* group) {
+
+#if !(defined(TARGET_OS_TV) && TARGET_OS_TV)
 #if GR_METAL_SDK_VERSION >= 220
     if (@available(macOS 10.15, iOS 13.0, tvOS 13.0, *)) {
-        // Apple Silicon
+
 #if GR_METAL_SDK_VERSION >= 230
         if ([device supportsFamily:MTLGPUFamilyApple7]) {
             *gpuFamily = GPUFamily::kApple;
@@ -191,6 +227,38 @@ bool Caps::GetGPUFamily(id<MTLDevice> device, GPUFamily* gpuFamily, int* group) 
             return true;
         }
     }
+#endif
+#else
+
+#if GR_METAL_SDK_VERSION >= 220
+    if (@available(macOS 10.15, iOS 13.0, tvOS 13.0, *)) {
+         if ([device supportsFamily:MTLGPUFamilyApple5]) {
+            *gpuFamily = GPUFamily::kApple;
+            *group = 5;
+            return true;
+        }
+        if ([device supportsFamily:MTLGPUFamilyApple4]) {
+            *gpuFamily = GPUFamily::kApple;
+            *group = 4;
+            return true;
+        }
+        if ([device supportsFamily:MTLGPUFamilyApple3]) {
+            *gpuFamily = GPUFamily::kApple;
+            *group = 3;
+            return true;
+        }
+        if ([device supportsFamily:MTLGPUFamilyApple2]) {
+            *gpuFamily = GPUFamily::kApple;
+            *group = 2;
+            return true;
+        }
+        if ([device supportsFamily:MTLGPUFamilyApple1]) {
+            *gpuFamily = GPUFamily::kApple;
+            *group = 1;
+            return true;
+        }
+    }
+#endif
 #endif
 
     // No supported GPU families were found

@@ -88,7 +88,7 @@ public:
                        const SkIPoint& dstPoint) override;
 
 #if GR_METAL_SDK_VERSION >= 230
-    id<MTLBinaryArchive> binaryArchive() const SK_API_AVAILABLE(macos(11.0), ios(14.0)) {
+    id<MTLBinaryArchive> binaryArchive() const SK_API_AVAILABLE(macos(11.0), ios(14.0), tvos(14.0)) {
         return fBinaryArchive;
     }
 #endif
@@ -307,7 +307,7 @@ private:
     SkDeque fOutstandingCommandBuffers;
 
 #if GR_METAL_SDK_VERSION >= 230
-    id<MTLBinaryArchive> fBinaryArchive SK_API_AVAILABLE(macos(11.0), ios(14.0));
+    id<MTLBinaryArchive> fBinaryArchive SK_API_AVAILABLE(macos(11.0), ios(14.0), tvos(14.0));
 #endif
 
     GrMtlResourceProvider fResourceProvider;
