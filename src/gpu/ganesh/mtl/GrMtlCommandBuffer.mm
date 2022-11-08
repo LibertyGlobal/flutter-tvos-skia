@@ -28,20 +28,25 @@ sk_sp<GrMtlCommandBuffer> GrMtlCommandBuffer::Make(id<MTLCommandQueue> queue) {
     }
 #endif
     id<MTLCommandBuffer> mtlCommandBuffer;
-#if GR_METAL_SDK_VERSION >= 230
-    if (@available(macOS 11.0, iOS 14.0, *)) {
-        MTLCommandBufferDescriptor* desc = [[MTLCommandBufferDescriptor alloc] init];
-        desc.errorOptions = MTLCommandBufferErrorOptionEncoderExecutionStatus;
-        mtlCommandBuffer = [queue commandBufferWithDescriptor:desc];
-    } else {
-        mtlCommandBuffer = [queue commandBuffer];
-    }
-#else
+#if (defined(TARGET_OS_TV) && TARGET_OS_TV)
     mtlCommandBuffer = [queue commandBuffer];
-#endif
+#else
+    #if GR_METAL_SDK_VERSION >= 230
+        if (@available(macOS 11.0, iOS 14.0, *)) {
+            MTLCommandBufferDescriptor* desc = [[MTLCommandBufferDescriptor alloc] init];
+            desc.errorOptions = MTLCommandBufferErrorOptionEncoderExecutionStatus;
+            mtlCommandBuffer = [queue commandBufferWithDescriptor:desc];
+        } else {
+            mtlCommandBuffer = [queue commandBuffer];
+        }
+    #else
+        mtlCommandBuffer = [queue commandBuffer];
+    #endif
     if (nil == mtlCommandBuffer) {
         return nullptr;
     }
+
+#endif
 
 #ifdef SK_ENABLE_MTL_DEBUG_INFO
     mtlCommandBuffer.label = @"GrMtlCommandBuffer::Make";
